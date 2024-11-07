@@ -2,24 +2,25 @@ const knex = require("../database/knex");
 
 class NotesController {
   async create(request, response) {
-    const { title, description, movieTags } = request.body;
     const user_id = request.user.id;
 
     const [note_id] = await knex("movie_notes").insert({
       title,
       description,
       user_id,
+      rating,
     });
 
-    const tagsInserts = movieTags.map(name => {
+    const tagsInserts = tags.map(name => {
       return {
         note_id,
         name,
         user_id,
       };
     });
-
-    await knex("movie_tags").insert(tagsInserts);
+    if (tagsInserts.length > 0) {
+      await knex("movie_tags").insert(tagsInserts);
+    }
 
     return response.json();
   }
